@@ -1,0 +1,62 @@
+import UIKit
+
+class SortingGameViewController: UIViewController {
+  // MARK: - Properties
+  private let images = [
+    "plastic-bottle",
+    "metal-can",
+    "cardboard-box",
+    "other-trash"
+  ]
+  private let swipeDirections = [
+    UISwipeGestureRecognizer.Direction.left,
+    UISwipeGestureRecognizer.Direction.right,
+    UISwipeGestureRecognizer.Direction.up,
+    UISwipeGestureRecognizer.Direction.down
+  ]
+  private var currentImageIndex = 0
+  private var score = 0
+
+  // MARK: - Outlets
+  @IBOutlet weak var imageView: UIImageView!
+  @IBOutlet weak var scoreLabel: UILabel!
+
+  // MARK: - View Lifecycle
+  override func viewDidLoad() {
+    super.viewDidLoad()
+
+    // Set the initial image and score
+    imageView.image = UIImage(named: images[currentImageIndex])
+    scoreLabel.text = "Score: 0"
+
+    // Add swipe gesture recognizers for each direction
+    for direction in swipeDirections {
+      let gestureRecognizer = UISwipeGestureRecognizer(target: self,
+                                                       action: #selector(handleSwipe(gestureRecognizer:)))
+      gestureRecognizer.direction = direction
+      imageView.addGestureRecognizer(gestureRecognizer)
+    }
+  }
+
+  // MARK: - Private
+  @objc private func handleSwipe(gestureRecognizer: UISwipeGestureRecognizer) {
+    // Check if the swipe direction matches the correct answer for the current image
+    let correctAnswer = swipeDirections.firstIndex(of: gestureRecognizer.direction)
+    if correctAnswer == currentImageIndex {
+      // Update the score and move on to the next image
+      score += 1
+      scoreLabel.text = "Score: \(score)"
+      currentImageIndex = (currentImageIndex + 1) % images.count
+      imageView.image = UIImage(named: images[currentImageIndex])
+    } else {
+      // Show an alert to inform the user that their answer was incorrect
+      let alertController = UIAlertController(title: "Incorrect Answer",
+                                              message: "Sorry, that was the wrong answer. Try again.",
+                                              preferredStyle: .alert)
+      let okAction = UIAlertAction(title: "OK", style: .default)
+      alertController.addAction(okAction)
+      present(alertController, animated: true)
+    }
+  }
+}
+
