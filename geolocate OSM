@@ -1,0 +1,83 @@
+import UIKit
+import CoreLocation
+import MapKit
+
+class LitterReportViewController: UIViewController {
+  // MARK: - Properties
+  private let imagePickerController = UIImagePickerController()
+  private var selectedImage: UIImage?
+  private var locationManager: CLLocationManager?
+  private var currentLocation: CLLocation?
+
+  // MARK: - Outlets
+  @IBOutlet weak var mapView: MKMapView!
+  @IBOutlet weak var takePhotoButton: UIButton!
+  @IBOutlet weak var submitButton: UIButton!
+
+  // MARK: - Actions
+  @IBAction func takePhotoButtonTapped(_ sender: Any) {
+    showImagePicker()
+  }
+
+  @IBAction func submitButtonTapped(_ sender: Any) {
+    guard let location = currentLocation else {
+      showMissingLocationAlert()
+      return
+    }
+
+    guard let image = selectedImage else {
+      showMissingImageAlert()
+      return
+    }
+
+    submitLitterReport(location: location, image: image)
+  }
+
+  // MARK: - Private
+  private func showImagePicker() {
+    imagePickerController.sourceType = .camera
+    imagePickerController.delegate = self
+    present(imagePickerController, animated: true)
+  }
+
+  private func showMissingLocationAlert() {
+    let alertController = UIAlertController(title: "Missing Location",
+                                            message: "Unable to determine current location. Please try again.",
+                                            preferredStyle: .alert)
+    let okAction = UIAlertAction(title: "OK", style: .default)
+    alertController.addAction(okAction)
+    present(alertController, animated: true)
+  }
+
+  private func showMissingImageAlert() {
+    let alertController = UIAlertController(title: "Missing Image",
+                                            message: "Please take a photo of the litter.",
+                                            preferredStyle: .alert)
+    let okAction = UIAlertAction(title: "OK", style: .default)
+    alertController.addAction(okAction)
+    present(alertController, animated: true)
+  }
+
+  private func submitLitterReport(location: CLLocation, image: UIImage) {
+    // TODO: Implement code to submit litter report
+    // 1. Upload the image and location data to a server
+    // 2. Add a pin to the map at the specified location
+  }
+
+  private func setupLocationManager() {
+    locationManager = CLLocationManager()
+    locationManager?.desiredAccuracy = kCLLocationAccuracyBest
+    locationManager?.distanceFilter = kCLDistanceFilterNone
+    locationManager?.delegate = self
+  }
+
+  private func requestLocationPermission() {
+    let status = CLLocationManager.authorizationStatus()
+
+    switch status {
+    case .authorizedWhenInUse, .authorizedAlways:
+      // TODO: Start updating location
+      break
+    case .notDetermined:
+      locationManager?.requestWhenInUseAuthorization()
+    case .restricted, .denied
