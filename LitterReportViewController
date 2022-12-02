@@ -1,0 +1,75 @@
+import UIKit
+
+class LitterReportViewController: UIViewController {
+  // MARK: - Properties
+  private let imagePickerController = UIImagePickerController()
+  private var selectedImage: UIImage?
+
+  // MARK: - Outlets
+  @IBOutlet weak var imageView: UIImageView!
+  @IBOutlet weak var addPhotoButton: UIButton!
+  @IBOutlet weak var locationTextField: UITextField!
+  @IBOutlet weak var submitButton: UIButton!
+
+  // MARK: - Actions
+  @IBAction func addPhotoButtonTapped(_ sender: Any) {
+    showImagePicker()
+  }
+
+  @IBAction func submitButtonTapped(_ sender: Any) {
+    guard let location = locationTextField.text, !location.isEmpty else {
+      showMissingLocationAlert()
+      return
+    }
+
+    guard let image = selectedImage else {
+      showMissingImageAlert()
+      return
+    }
+
+    submitLitterReport(location: location, image: image)
+  }
+
+  // MARK: - Private
+  private func showImagePicker() {
+    imagePickerController.sourceType = .photoLibrary
+    imagePickerController.delegate = self
+    present(imagePickerController, animated: true)
+  }
+
+  private func showMissingLocationAlert() {
+    let alertController = UIAlertController(title: "Missing Location",
+                                            message: "Please enter the location of the litter.",
+                                            preferredStyle: .alert)
+    let okAction = UIAlertAction(title: "OK", style: .default)
+    alertController.addAction(okAction)
+    present(alertController, animated: true)
+  }
+
+  private func showMissingImageAlert() {
+    let alertController = UIAlertController(title: "Missing Image",
+                                            message: "Please add a photo of the litter.",
+                                            preferredStyle: .alert)
+    let okAction = UIAlertAction(title: "OK", style: .default)
+    alertController.addAction(okAction)
+    present(alertController, animated: true)
+  }
+
+  private func submitLitterReport(location: String, image: UIImage) {
+    // TODO: Implement code to submit litter report
+  }
+}
+
+// MARK: - UIImagePickerControllerDelegate
+extension LitterReportViewController: UIImagePickerControllerDelegate {
+  func imagePickerController(_ picker: UIImagePickerController,
+                             didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+    selectedImage = info[.originalImage] as? UIImage
+    imageView.image = selectedImage
+    dismiss(animated: true)
+  }
+}
+
+// MARK: - UINavigationControllerDelegate
+extension LitterReportViewController: UINavigationControllerDelegate {
+}
