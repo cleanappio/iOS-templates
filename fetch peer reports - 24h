@@ -1,0 +1,56 @@
+import MapKit
+import OpenStreetMap
+
+class LitterReportsViewController: UIViewController {
+  // MARK: - Properties
+  private let mapView = MKMapView()
+  private let overlays = OpenStreetMap.Overlays()
+
+  // MARK: - View Lifecycle
+  override func viewDidLoad() {
+    super.viewDidLoad()
+
+    // Add the map view to the view hierarchy
+    view.addSubview(mapView)
+
+    // Set the map view's constraints so that it fills the entire view
+    mapView.translatesAutoresizingMaskIntoConstraints = false
+    NSLayoutConstraint.activate([
+      mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+      mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+      mapView.topAnchor.constraint(equalTo: view.topAnchor),
+      mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+    ])
+
+    // Add the CleanAppMap overlay to the map view
+    overlays.addOverlay(named: "CleanAppMap") { [weak self] error in
+      guard let self = self else { return }
+      if let error = error {
+        print("Error adding CleanAppMap overlay: \(error)")
+      } else {
+        self.mapView.addOverlay(self.overlays.lastOverlay!)
+      }
+    }
+
+    // Set the map view's delegate to receive callbacks for map rendering and user interaction
+    mapView.delegate = self
+  }
+
+  // MARK: - Private
+  private func fetchLitterReports(in location: CLLocationCoordinate2D, radius: Double, timestamp: Date) {
+    // TODO: Implement code to fetch litter reports
+    // 1. Use the OpenStreetMap API to query for litter reports in the specified location and time range
+    // 2. Add annotations to the map view for each litter report
+  }
+}
+
+extension LitterReportsViewController: MKMapViewDelegate {
+  func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+    // Use the OpenStreetMap library to render the CleanAppMap overlay
+    return overlays.renderer(for: overlay)
+  }
+
+  func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+    // TODO: Implement code to handle user selection of a litter report annotation
+  }
+}
