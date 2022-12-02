@@ -1,0 +1,64 @@
+import UIKit
+
+class SortingGameViewController: UIViewController {
+  // MARK: - Properties
+  private let images = [
+    "plastic-bottle",
+    "metal-can",
+    "cardboard-box",
+    "other-trash"
+  ]
+  private let hapticFeedback = UIImpactFeedbackGenerator(style: .heavy)
+  private var currentImageIndex = 0
+  private var score = 0
+  private var urgency = 0
+
+  // MARK: - Outlets
+  @IBOutlet weak var imageView: UIImageView!
+  @IBOutlet weak var scoreLabel: UILabel!
+
+  // MARK: - View Lifecycle
+  override func viewDidLoad() {
+    super.viewDidLoad()
+
+    // Set the initial image and score
+    imageView.image = UIImage(named: images[currentImageIndex])
+    scoreLabel.text = "Score: 0"
+
+    // Add a long press gesture recognizer to the image view
+    let gestureRecognizer = UILongPressGestureRecognizer(target: self,
+                                                         action: #selector(handleLongPress(gestureRecognizer:)))
+    gestureRecognizer.minimumPressDuration = 0.1
+    imageView.addGestureRecognizer(gestureRecognizer)
+  }
+
+  // MARK: - Private
+  @objc private func handleLongPress(gestureRecognizer: UILongPressGestureRecognizer) {
+    // Update the urgency value based on the pressure of the user's touch
+    if gestureRecognizer.state == .began {
+      urgency = Int(gestureRecognizer.pressure * 10)
+      hapticFeedback.impactOccurred()
+    } else if gestureRecognizer.state == .ended {
+      // Check if the urgency value matches the correct answer for the current image
+      let correctAnswer = urgency % images.count
+      if correctAnswer == currentImageIndex {
+        // Update the score and move on to the next image
+        score += 1
+        scoreLabel.text = "Score: \(score)"
+        currentImageIndex = (currentImageIndex + 1) % images.count
+        imageView.image = UIImage(named: images[currentImageIndex])
+      } else {
+        // Show an alert to inform the user that their answer was incorrect
+        let alertController = UIAlertController(title: "Incorrect Answer",
+                                                message: "Sorry, that was the wrong answer. Try again.",
+                                                preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default)
+        alertController.addAction(okAction)
+        present(alertController, animated: true)
+      }
+
+      // Reset the urgency value
+      urgency = 0
+    }
+  }
+}
