@@ -1,0 +1,59 @@
+import UIKit
+import EthereumKit
+
+class SignupViewController: UIViewController {
+
+    // MARK: - Properties
+
+    let ethereumClient = EthereumClient()
+
+    // MARK: - View Lifecycle
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        // Ask the user if they have an ENS name and want to use it as their username
+        let alertController = UIAlertController(title: "Username", message: "Do you have an ENS name and want to use it as your username?", preferredStyle: .alert)
+
+        let yesAction = UIAlertAction(title: "Yes", style: .default) { _ in
+            // Show a text field for the user to enter their ENS name
+            let ensNameTextField = UITextField()
+            ensNameTextField.placeholder = "ENS Name"
+            alertController.addTextField(configurationHandler: { textField in
+                textField.placeholder = "ENS Name"
+            })
+
+            // Update the alert controller's message to include the text field
+            alertController.message = "Please enter your ENS name below:"
+
+            // Add a "Continue" button to the alert controller
+            let continueAction = UIAlertAction(title: "Continue", style: .default) { _ in
+                // Get the user's ENS name from the text field
+                let ensName = ensNameTextField.text
+
+                // Generate a new Ethereum address
+                let newAddress = self.ethereumClient.createAddress()
+
+                // Generate a private recovery key for the Ethereum address
+                let privateRecoveryKey = self.ethereumClient.createPrivateRecoveryKey(from: newAddress)
+
+                // Associate the user's ENS name with their Ethereum address
+                self.ethereumClient.setUsername(ensName, for: newAddress)
+
+                // Show the private recovery key to the user
+                let recoveryKeyLabel = UILabel()
+                recoveryKeyLabel.text = "Private Recovery Key: \(privateRecoveryKey)"
+                self.view.addSubview(recoveryKeyLabel)
+
+                // Prompt the user to write down their private recovery key
+                let recoveryKeyPromptLabel = UILabel()
+                recoveryKeyPromptLabel.text = "Please write down your private recovery key on a piece of paper and store it safely. This is the ONLY way to recover your blockchain rewards."
+                self.view.addSubview(recoveryKeyPromptLabel)
+
+                // Proceed to the next screen in the app
+            }
+            alertController.addAction(continueAction)
+        }
+        alertController.addAction(yesAction)
+
+        let noAction = UIAlertAction(title: "No", style:
