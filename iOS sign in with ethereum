@@ -1,0 +1,44 @@
+import UIKit
+import EthereumKit
+
+class SignupViewController: UIViewController {
+
+    // MARK: - Properties
+
+    let ethereumClient = EthereumClient()
+
+    // MARK: - View Lifecycle
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        // Generate a new Ethereum address
+        let newAddress = ethereumClient.createAddress()
+
+        // Generate a private recovery key for the Ethereum address
+        let privateRecoveryKey = ethereumClient.createPrivateRecoveryKey(from: newAddress)
+
+        // Show the private recovery key to the user
+        let recoveryKeyLabel = UILabel()
+        recoveryKeyLabel.text = "Private Recovery Key: \(privateRecoveryKey)"
+        view.addSubview(recoveryKeyLabel)
+
+        // Prompt the user to write down their private recovery key
+        let recoveryKeyPromptLabel = UILabel()
+        recoveryKeyPromptLabel.text = "Please write down your private recovery key on a piece of paper and store it safely. This is the ONLY way to recover your blockchain rewards."
+        view.addSubview(recoveryKeyPromptLabel)
+
+        // Set up a button to confirm that the user has written down their private recovery key
+        let confirmButton = UIButton(type: .system)
+        confirmButton.setTitle("I have written down my private recovery key", for: .normal)
+        confirmButton.addTarget(self, action: #selector(confirmButtonTapped), for: .touchUpInside)
+        view.addSubview(confirmButton)
+    }
+
+    // MARK: - Actions
+
+    @objc
+    func confirmButtonTapped() {
+        // Proceed to the next screen in the app
+    }
+}
