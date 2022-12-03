@@ -56,4 +56,4 @@ class SignupViewController: UIViewController {
         }
         alertController.addAction(yesAction)
 
-        let noAction = UIAlertAction(title: "No", style:
+        let noAction = UIAlertAction(title: "No", style: .default) {
